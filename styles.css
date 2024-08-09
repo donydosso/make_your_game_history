@@ -35,6 +35,38 @@ body {
   display: block;
 }
 
+.story-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  z-index: 2000;
+  text-align: center;
+}
+
+.story-overlay h2 {
+  margin-bottom: 15px;
+}
+
+.story-overlay p {
+  margin-bottom: 20px;
+}
+
+#continueButton {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #fff;
+  color: #000;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+
 #player {
   position: absolute;
   width: 60px;

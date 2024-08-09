@@ -274,23 +274,26 @@ function isBulletCollision(bullet, enemyBullet) {
     return bullet.x < enemyBullet.x + 10 && bullet.x + 10 > enemyBullet.x && bullet.y < enemyBullet.y + 20 && bullet.y + 20 > enemyBullet.y;
 }
 
-// Fonction pour mettre à jour l'état du jeu
+// Modification de la fonction de mise à jour de l'état du jeu pour inclure le mode histoire
 function updateGameState() {
     if (lives === 0) {
         isGameRunning = false;
         gameOverElement.style.display = "block";
         overlay.style.display = "block";
-        finalScoreElement.textContent = `Final Score: ${score} - Level: ${level}`;
-    }
-    if (enemies.length === 0 && lives > 0) {
-        level++;
-        if (level === 15) {
-            displayVictoryMessage();
+        finalScoreElement.textContent = `Final Score: ${score} - Level: ${currentStoryLevel}`;
+    } else if (enemies.length === 0 && lives > 0) {
+        if (storyIsActive) {
+            nextStoryLevel();
         } else {
-            createEnemies();
+            level++;
+            if (level === 15) {
+                displayVictoryMessage();
+            } else {
+                createEnemies();
+            }
         }
     }
-    scoreElement.textContent = `Score: ${score} - Lives: ${lives} - Level: ${level}`;
+    scoreElement.textContent = `Score: ${score} - Lives: ${lives} - Level: ${currentStoryLevel}`;
 }
 
 // Fonction pour afficher le message de victoire
@@ -311,9 +314,13 @@ function gameLoop() {
     if (isGameRunning) {
         moveEnemies();
         moveBullets();
+        if (storyModeActive && enemies.length === 0 && lives > 0) {
+            nextChapter(); // Passer au chapitre suivant si tous les ennemis sont éliminés
+        }
         requestAnimationFrame(gameLoop);
     }
 }
+
 
 // Gestion des événements clavier
 document.addEventListener("keydown", (event) => {
@@ -416,6 +423,15 @@ function resetGame() {
     gameOverElement.style.display = "none";
     overlay.style.display = "none";
 }
+
+// Gestion du bouton de démarrage du mode histoire
+const storyModeButtonElement = document.getElementById("storyButton");
+
+storyModeButtonElement.addEventListener("click", () => {
+    resetGame();
+    startStoryMode();
+});
+
 
 // Initialisation du jeu
 resizeGameContainer();
