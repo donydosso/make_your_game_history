@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Space invaders gamme</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="gameContainer">
+      <div id="Overlay"></div>
+      <div id="player"></div>
+      <div id="score">Score: 0 - Lives: 5 - Level: 1</div>
+      <div id="victoryMessage" class="hidden">
+          <h2>Félicitations ! Vous avez gagné !</h2>
+      </div>
+      <div id="gameOver">
+        <h2>
+          Vous avez perdu !!
+        </h2>
+        <p id="finalScore"></p>
+        <button id="restartButton">Rejouer</button>
+      </div>
+      <div id="pauseMenu">
+        <h2>Pause !!</h2>
+        <button id="resumeButton">Continuer</button>
+        <button id="restart">Recommencer</button>
+        <button id="quitButton">Quitter la partie</button>
+      </div>
+      <div id="startMenu">
+        <h1>Invaders</h1>
+        <p>** Utilisez les flèches pour déplacer le vaisseau et la barre d'espace pour tirer</p>
+        <button id="startButton">Commencer à jouer</button>
+      </div>
+      <button id="pauseButton">Pauser</button>
+    </div>
+    <script src="index.js"></script>
+  </body>
+</html>
