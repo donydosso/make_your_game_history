@@ -207,19 +207,11 @@ function moveBullets() {
             bullets.splice(i, 1);
             i--;
             bossLives--;
-            const fired = document.createElement("div");
-            fired.classList.add("fired");
-            fired.style.left = bullet.x + "px";
-            fired.style.top = bullet.y + "px";
-            fired.textContent = "Fired";
-            gameContainer.appendChild(fired);
-            setTimeout(() => {
-                fired.remove();
-            }, 1000);
+            
             if (bossLives <= 0) {
                 boss.element.remove();
                 boss = null;
-                score += 10; // Récompense pour avoir vaincu le boss
+                score += 100; // Récompense pour avoir vaincu le boss
                 isGameRunning = false;
                 storyModeActive = false;
                 displayVictoryMessage();
@@ -304,7 +296,7 @@ function isBulletCollision(bullet, enemyBullet) {
 // Fonction pour mettre à jour l'état du jeu
 function updateGameState() {
     if (lives === 0) {
-        if (storyModeActive) {
+        if (storyMode) {
             storyModeActive = false;
             gameOverElement.style.display = "block";
             overlay.style.display = "block";
@@ -316,8 +308,10 @@ function updateGameState() {
         finalScoreElement.textContent = `Final Score: ${score} - Level: ${level}`;
     }
     if (enemies.length === 0 && lives > 0) {
-        if (level === bossSpawnLevel && storyMode && !boss) {
-            createBoss();
+        if (level === bossSpawnLevel && storyMode) {
+            if (!boss) {
+                createBoss();
+            }
         } else {
             level++;
             if (storyMode && level % 2 !== 0) {
