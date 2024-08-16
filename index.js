@@ -80,7 +80,7 @@ document.body.appendChild(DisplayTimeplay);
 DisplayTimeplay.textContent = `Time: 0.00 minutes`;
 
 function updateTimePlay() {
-    if (isGameRunning) {
+    if (isGameRunning || storyModeActive) {
         const now = Date.now();
         const delta = now - lastTime;
         DisplayTimeplay.textContent = `Time: ${(delta / 60000).toFixed(2)} minutes`;
@@ -201,6 +201,33 @@ function moveBullets() {
         const bullet = bullets[i];
         bullet.y -= bulletSpeed;
         bullet.element.style.top = bullet.y + "px";
+
+        if (boss && isCollision(bullet, boss)) {
+            bullet.element.remove();
+            bullets.splice(i, 1);
+            i--;
+            bossLives--;
+            const fired = document.createElement("div");
+            fired.classList.add("fired");
+            fired.style.left = bullet.x + "px";
+            fired.style.top = bullet.y + "px";
+            fired.textContent = "Fired";
+            gameContainer.appendChild(fired);
+            setTimeout(() => {
+                fired.remove();
+            }, 1000);
+            if (bossLives <= 0) {
+                boss.element.remove();
+                boss = null;
+                score += 10; // Récompense pour avoir vaincu le boss
+                isGameRunning = false;
+                storyModeActive = false;
+                displayVictoryMessage();
+            }
+            break;
+        }
+
+        // Vérifier collision avec les ennemis
         for (let j = 0; j < enemies.length; j++) {
             const enemy = enemies[j];
             if (isCollision(bullet, enemy)) {
@@ -209,12 +236,12 @@ function moveBullets() {
                 i--;
                 enemy.element.remove();
                 enemies.splice(j, 1);
-                j--;
                 score++;
                 updateGameState();
                 break;
             }
         }
+
         if (bullet.y < 0) {
             bullet.element.remove();
             bullets.splice(i, 1);
@@ -274,49 +301,63 @@ function isBulletCollision(bullet, enemyBullet) {
     return bullet.x < enemyBullet.x + 10 && bullet.x + 10 > enemyBullet.x && bullet.y < enemyBullet.y + 20 && bullet.y + 20 > enemyBullet.y;
 }
 
-// Modification de la fonction de mise à jour de l'état du jeu pour inclure le mode histoire
+// Fonction pour mettre à jour l'état du jeu
 function updateGameState() {
     if (lives === 0) {
+        if (storyModeActive) {
+            storyModeActive = false;
+            gameOverElement.style.display = "block";
+            overlay.style.display = "block";
+            finalScoreElement.textContent = `Final Score: ${score} - Level: ${level}`;
+        }
         isGameRunning = false;
         gameOverElement.style.display = "block";
         overlay.style.display = "block";
-        finalScoreElement.textContent = `Final Score: ${score} - Level: ${currentStoryLevel}`;
-    } else if (enemies.length === 0 && lives > 0) {
-        if (storyIsActive) {
-            nextStoryLevel();
+        finalScoreElement.textContent = `Final Score: ${score} - Level: ${level}`;
+    }
+    if (enemies.length === 0 && lives > 0) {
+        if (level === bossSpawnLevel && storyMode && !boss) {
+            createBoss();
         } else {
             level++;
-            if (level === 15) {
-                displayVictoryMessage();
+            if (storyMode && level % 2 !== 0) {
+                nextChapter();
             } else {
-                createEnemies();
+                if (level === 9) {
+                    bossSpawnLevel = level;
+                    createBoss();
+                } else {
+                    createEnemies();
+                }
             }
         }
     }
-    scoreElement.textContent = `Score: ${score} - Lives: ${lives} - Level: ${currentStoryLevel}`;
+    scoreElement.textContent = `Score: ${score} - Lives: ${lives} - Level: ${level}`;
 }
 
 // Fonction pour afficher le message de victoire
 function displayVictoryMessage() {
     const victoryMessage = document.getElementById("victoryMessage");
     victoryMessage.classList.add("show");
+    if (storyMode) {
+        victoryMessage.textContent = "Vous avez repoussé les envahisseurs !!\nLa terre et tous ses habitants sont désormais hors de dangers."
+        victoryMessage.style.fontSize = "1.5em";
+    }
     setTimeout(() => {
         victoryMessage.classList.remove("show");
         resetGame();
-        isGameRunning = false;
+        storyMode = false;
         startMenuElement.style.display = "block";
         overlay.style.display = "block";
-    }, 5000); // Laisser le message affiché pendant 2 secondes
+    }, 7000); // Laisser le message affiché pendant 2 secondes
 }
 
 // Fonction pour la boucle de jeu
 function gameLoop() {
-    if (isGameRunning) {
+    if (isGameRunning || storyModeActive) {
         moveEnemies();
         moveBullets();
-        if (storyModeActive && enemies.length === 0 && lives > 0) {
-            nextChapter(); // Passer au chapitre suivant si tous les ennemis sont éliminés
-        }
+        moveBoss(); // Déplace le boss s'il est présent
         requestAnimationFrame(gameLoop);
     }
 }
@@ -324,13 +365,17 @@ function gameLoop() {
 
 // Gestion des événements clavier
 document.addEventListener("keydown", (event) => {
-    if (isGameRunning) {
+    if (isGameRunning || storyModeActive) {
         if (event.key === "ArrowLeft") {
             movePlayer("left");
         } else if (event.key === "ArrowRight") {
             movePlayer("right");
         } else if (event.key === " ") {
             fireBullet();
+        } else if (event.key === "Escape") {
+            isGameRunning = false;
+            storyModeActive = false;
+            pauseMenuElement.style.display = "block";
         }
     }
 });
@@ -351,14 +396,19 @@ let pausetime = Date.now();
 pauseButtonElement.addEventListener("click", () => {
     pausetime = Date.now();
     isGameRunning = false;
+    storyModeActive = false;
     pauseMenuElement.style.display = "block";
     overlay.style.display = "block";
 });
 
 // Gestion du bouton de reprise
 resumeButtonElement.addEventListener("click", () => {
+    if (storyMode) {
+        storyModeActive = true;
+    } else {
+        isGameRunning = true;
+    }
     let resumetime = Date.now();
-    isGameRunning = true;
     pauseMenuElement.style.display = "none";
     overlay.style.display = "none";
     lastTime = lastTime + (resumetime - pausetime);
@@ -369,27 +419,38 @@ resumeButtonElement.addEventListener("click", () => {
 // Gestion du bouton de redémarrage
 restart.addEventListener("click", () => {
     resetGame();
-    isGameRunning = true;
-    pauseMenuElement.style.display = "none";
-    createEnemies();
-    gameLoop();
-    updateTimePlay();
+    if (storyMode) {
+        pauseMenuElement.style.display = "none";
+        startStoryMode();
+    } else {
+        isGameRunning = true;
+        pauseMenuElement.style.display = "none";
+        createEnemies();
+        gameLoop();
+        updateTimePlay();
+    }
 });
 
 // Gestion du bouton de redémarrage
 restartButtonElement.addEventListener("click", () => {
     resetGame();
-    isGameRunning = true;
-    gameOverElement.style.display = "none";
-    createEnemies();
-    gameLoop();
-    updateTimePlay();
+    if (storyMode) {
+        gameOverElement.style.display = "none";
+        startStoryMode();
+    } else {
+        gameOverElement.style.display = "none";
+        isGameRunning = true;
+        createEnemies();
+        gameLoop();
+        updateTimePlay();
+    }
 });
 
 // Gestion du bouton de quitter
 quitButtonElement.addEventListener("click", () => {
     resetGame();
     isGameRunning = false;
+    storyMode = false;
     startMenuElement.style.display = "block";
     pauseMenuElement.style.display = "none";
     gameOverElement.style.display = "none";
@@ -407,6 +468,12 @@ function resetGame() {
     for (const bullet of enemyBullets) {
         bullet.element.remove();
     }
+
+    if (boss) {
+        boss.element.remove();
+    }
+    boss = null;
+    
     enemies.length = 0;
     bullets.length = 0;
     enemyBullets.length = 0;

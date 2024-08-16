@@ -78,6 +78,11 @@ body {
   box-shadow: 0 0 15px rgba(52, 152, 219, 0.7);
 }
 
+.fired {
+  background: linear-gradient(to bottom, #e74c3c, #c0392b);
+  color: "red";
+}
+
 #victoryMessage {
   position: absolute;
   top: 50%;
@@ -109,6 +114,15 @@ body {
   width: 60px;
   height: 60px;
   background: linear-gradient(to bottom, #e74c3c, #c0392b);
+  border-radius: 50%;
+  box-shadow: 0 0 15px rgba(231, 76, 60, 0.7);
+}
+
+.boss {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(to bottom, #e74c3c, #a5035a);
   border-radius: 50%;
   box-shadow: 0 0 15px rgba(231, 76, 60, 0.7);
 }
