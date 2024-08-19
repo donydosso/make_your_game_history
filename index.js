@@ -207,6 +207,20 @@ function moveBullets() {
             bullets.splice(i, 1);
             i--;
             bossLives--;
+
+            // Afficher le nombre de vies du boss après qu'il a été touché
+            const bossLifeDisplay = document.createElement("div");
+            bossLifeDisplay.classList.add("fired");
+            bossLifeDisplay.style.left = `${boss.x + 100}px`;
+            bossLifeDisplay.style.top = `${boss.y + 20}px`; // Affiche au-dessus du boss
+            bossLifeDisplay.textContent = `${bossLives}`;
+            bossLifeDisplay.style.fontSize = "35px";
+            bossLifeDisplay.style.color = "red";
+            gameContainer.appendChild(bossLifeDisplay);
+
+            setTimeout(() => {
+                bossLifeDisplay.remove();
+            }, 1500);
             
             if (bossLives <= 0) {
                 boss.element.remove();
@@ -311,18 +325,25 @@ function updateGameState() {
         if (level === bossSpawnLevel && storyMode) {
             if (!boss) {
                 createBoss();
+                lives += 3
             }
-        } else {
+        } else if (storyMode) {
             level++;
             if (storyMode && level % 2 !== 0) {
                 nextChapter();
             } else {
-                if (level === 9) {
+                createEnemies();
+            }
+        } else {
+            if (level === 9) {
+                if (!boss) {
                     bossSpawnLevel = level;
                     createBoss();
-                } else {
-                    createEnemies();
+                    lives += 3;
                 }
+            } else {
+                level++;
+                createEnemies();
             }
         }
     }

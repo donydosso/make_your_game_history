@@ -79,7 +79,6 @@ body {
 }
 
 .fired {
-  background: linear-gradient(to bottom, #e74c3c, #c0392b);
   color: "red";
 }
 

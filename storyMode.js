@@ -82,7 +82,7 @@ function nextChapter() {
 
 // Fonction pour créer le boss
 function createBoss() {
-				bossLives = 10 + level; // Le nombre de vies du boss dépend du niveau actuel
+				bossLives = 10 + level * 1.5; // Le nombre de vies du boss dépend du niveau actuel
 				const bossElement = document.createElement("div");
 				bossElement.classList.add("boss");
 				bossElement.style.left = gameContainer.offsetWidth / 2 - 75 + "px"; // Centré horizontalement
@@ -95,11 +95,13 @@ function createBoss() {
 function moveBoss() {
 				if (boss) {
 								boss.x += boss.speed * enemyDirection;
-								if (boss.x <= 0 || boss.x >= gameContainer.offsetWidth - 150) {
+								if (boss.x <= 0 || boss.x >= gameContainer.offsetWidth - 100) {
 												enemyDirection *= -1; // Inverse la direction si le boss touche les bords
+												boss.y += 10; // Déplace le boss vers le bas
+												boss.element.style.top = boss.y + "px";
 								}
 								boss.element.style.left = boss.x + "px";
-
+					
 								// Possibilité d'ajouter des tirs du boss ici
 								if (Math.random() < 0.05) {
 												fireEnemyBullet(boss); // Utilise la même fonction de tir que les ennemis
