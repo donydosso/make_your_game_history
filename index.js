@@ -325,7 +325,7 @@ function updateGameState() {
         if (level === bossSpawnLevel && storyMode) {
             if (!boss) {
                 createBoss();
-                lives += 3
+                lives += 2
             }
         } else if (storyMode) {
             level++;

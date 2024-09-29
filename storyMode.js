@@ -13,9 +13,9 @@ let bossSpawnLevel = 6; // Niveau auquel le boss apparaît
 
 // Liste des chapitres de l'histoire
 const storyChapters = [
-				{ title: "Episode 1: Prélude", description: "Votre monde et tout ce que vous avez toujours connu est sur le point de disparaitre !!\nLa terre est en proie aux envahisseurs venus d'une nébuleuse de lointaine.\nVous êtes l'un des seigneurs de guerre qui ont été choisi pour la défendre et repoussez cette menace imminente."},
-				{ title: "Chapter 2: Rising Tension", description: "The enemies grow stronger as you push forward..." },
-				{ title: "Chapter 3: The Final Showdown", description: "It's time to face the ultimate challenge..." }
+				{ title: "Episode 1: Prélude", description: "Votre monde et tout ce que vous avez toujours connu est sur le point de disparaitre !!\nLa terre est en proie aux envahisseurs venus d'une nébuleuse lointaine.\nVous êtes l'un des seigneurs de guerre qui ont été choisi pour la défendre et repoussez cette menace imminente."},
+				{ title: "Chapter 2: Rising Tension", description: "Félicitation !!\nVous êtes parvenu à repousser la première vague d'enemis.\nToutefois, vous n'êtes pas encore d'affaire.\nPréparer vous pour la contrataque à venir !!!" },
+				{ title: "Chapter 3: The Final Showdown", description: "Les échos de votre victoire se répandent dans tout le cosmos et parvient aux oreilles du commandant en chef des envahisseurs.\nAnimé d'une grande fureur, il décide de se déplacer en personne pour anihiler de ses mains ceux ayant ternis l'image de leur armée.\nUne bataille périlleuse s'annonce !!" }
 ];
 
 // Fonction pour démarrer le mode histoire
